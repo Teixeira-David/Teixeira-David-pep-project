@@ -16,7 +16,7 @@ public class MessageDAO {
         // Try to connect to the database and insert the message into the messages table
         try (Connection conn = ConnectionUtil.getConnection()) {
             // Set the sql insert string and prevent SQL injection
-            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?,?,?);";
+            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?,?,?)";
 
             // Prepare the statement and execute the query
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -25,21 +25,27 @@ public class MessageDAO {
             ps.setLong(3, message.getTime_posted_epoch());
 
             // Execute the query and get the generated keys
-            ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected);
 
-            // Get the generated keys and set the message_id
-            ResultSet rs = ps.getGeneratedKeys();
-            rs.next();
-
-            // Set the message_id and return the message
-            message.setMessage_id(rs.getInt(1));
-            return message;
-
+            // If a row is inserted, get the generated ID and set it in the message object
+            if (rowsAffected > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    // Set the generated ID and message_id
+                    int generatedId = rs.getInt(1);
+                    message.setMessage_id(generatedId);
+                    System.out.println("Generated message ID: " + generatedId);
+                    return message;
+                }
+            }
+    
         } catch (SQLException e) {
             // Print the exception and return null if the exception is caught
             e.printStackTrace();
             return null;
         }    
+        return null;
     }
 
     // Get all messages from the database
@@ -47,7 +53,7 @@ public class MessageDAO {
         // Try to connect to the database and get all messages from the messages table
         try (Connection conn = ConnectionUtil.getConnection()) {
             // Set the sql select string and prevent SQL injection
-            String sql = "SELECT * FROM message;";
+            String sql = "SELECT * FROM message";
 
             // Prepare the statement and execute the query
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -85,7 +91,7 @@ public class MessageDAO {
         // Try to connect to the database and get the message by its id from the messages table
         try (Connection conn = ConnectionUtil.getConnection()) {
             // Set the sql select string and prevent SQL injection
-            String sql = "SELECT * FROM messages WHERE message_id = ?";
+            String sql = "SELECT * FROM message WHERE message_id = ?";
 
             // Prepare the statement and execute the query
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -137,11 +143,11 @@ public class MessageDAO {
     }
 
     // Update a message by its id in the database
-    public Message updateMessage(int id, String newText) {
+    public Message updateMessageById(int id, String newText) {
         // Try to connect to the database and update the message text by its id in the messages table
         try (Connection conn = ConnectionUtil.getConnection()) {
             // Set the sql update string and prevent SQL injection
-            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?;";
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
 
             // Prepare the statement and execute the query
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -169,7 +175,7 @@ public class MessageDAO {
         // Try to connect to the database and get all messages by a user id from the messages table
         try (Connection conn = ConnectionUtil.getConnection()) {
             // Set the sql select string and prevent SQL injection
-            String sql = "SELECT * FROM message WHERE posted_by = ?;";
+            String sql = "SELECT * FROM message WHERE posted_by = ?";
 
             // Prepare the statement and execute the query
             PreparedStatement ps = conn.prepareStatement(sql);

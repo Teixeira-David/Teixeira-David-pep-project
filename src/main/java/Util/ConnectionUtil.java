@@ -64,10 +64,12 @@ public class ConnectionUtil {
 	 * file in resources. This will be performed before every test.
 	 */
 	public static void resetTestDatabase() {
-		try {
+		try  {
 			FileReader sqlReader = new FileReader("src/main/resources/SocialMedia.sql");
 			RunScript.execute(getConnection(), sqlReader);
 		} catch (SQLException | FileNotFoundException e) {
+			// Display the error message
+			System.err.println("Error resetting the database: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

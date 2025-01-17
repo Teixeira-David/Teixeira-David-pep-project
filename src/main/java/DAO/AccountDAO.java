@@ -75,4 +75,52 @@ public class AccountDAO {
             return null;
         }
     }
+
+    // Check if a username already exists
+    public boolean existsByUsername(String username) {
+        // Try to connect to the database
+        try (Connection conn = ConnectionUtil.getConnection()) {
+            // Set the sql select string and prevent SQL injection
+            String sql = "SELECT * FROM account WHERE username = ?;";
+
+            // Prepare the statement and execute the query
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+
+            // Execute the query and get the result set
+            ResultSet rs = ps.executeQuery();
+
+            // Return true if a row is found, otherwise return false
+            return rs.next();
+
+        } catch (SQLException e) {
+            // Print the exception and return false if the exception is caught
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Check if an account exists by its id
+    public boolean existsById(int id) {
+        // Try to connect to the database
+        try (Connection conn = ConnectionUtil.getConnection()) {
+            // Set the sql select string and prevent SQL injection
+            String sql = "SELECT * FROM account WHERE account_id = ?;";
+
+            // Prepare the statement and execute the query
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            // Execute the query and get the result set
+            ResultSet rs = ps.executeQuery();
+
+            // Return true if a row is found, otherwise return false
+            return rs.next();
+
+        } catch (SQLException e) {
+            // Print the exception and return false if the exception is caught
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -13,10 +13,10 @@ CREATE TABLE message (
     message_text VARCHAR(255),
     time_posted_epoch BIGINT,
     FOREIGN KEY (posted_by) REFERENCES account(account_id)
-)
+);
 
 INSERT INTO account (username, password)
 VALUES ('testuser1', 'password');
 
 INSERT INTO message (posted_by, message_text, time_posted_epoch)
-VALUES (1, 'test message 2', 1669947792);
+VALUES (1, 'test message 1', 1669947792);

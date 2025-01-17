@@ -42,8 +42,6 @@ public class CreateMessageTest {
     public void tearDown() {
         app.stop();
     }
-
-
     
 
     /**
